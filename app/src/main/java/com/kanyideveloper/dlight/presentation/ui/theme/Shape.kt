@@ -1,4 +1,4 @@
-package com.kanyideveloper.dlight.ui.theme
+package com.kanyideveloper.dlight.presentation.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
