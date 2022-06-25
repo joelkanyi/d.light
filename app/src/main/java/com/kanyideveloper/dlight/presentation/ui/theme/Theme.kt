@@ -1,4 +1,4 @@
-package com.kanyideveloper.dlight.ui.theme
+package com.kanyideveloper.dlight.presentation.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
