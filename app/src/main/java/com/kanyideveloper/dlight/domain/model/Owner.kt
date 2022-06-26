@@ -1,9 +1,6 @@
-package com.kanyideveloper.dlight.data.local.entity
+package com.kanyideveloper.dlight.domain.model
 
-import androidx.room.Entity
-
-@Entity(tableName = "owner_table")
-data class OwnerEntity(
+data class Owner(
     val avatarUrl: String,
     val eventsUrl: String,
     val followersUrl: String,

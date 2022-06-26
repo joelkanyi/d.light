@@ -1,13 +1,6 @@
-package com.kanyideveloper.dlight.data.local.entity
+package com.kanyideveloper.dlight.domain.model
 
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "user_table", indices = [Index(value = ["login"], unique = true)])
-data class UserEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
+data class User(
     val avatarUrl: String,
     val bio: String,
     val blog: String,
@@ -23,6 +16,7 @@ data class UserEntity(
     val gravatarId: String,
     val hireable: Boolean,
     val htmlUrl: String,
+    val id: Int,
     val location: String,
     val login: String?,
     val name: String,
@@ -38,5 +32,5 @@ data class UserEntity(
     val twitterUsername: String,
     val type: String,
     val updatedAt: String,
-    val url: String
+    val url: String,
 )

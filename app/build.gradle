@@ -21,6 +21,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        buildConfigField("String", "ACCESS_TOKEN", ACCESS_TOKEN)
     }
 
     buildTypes {
