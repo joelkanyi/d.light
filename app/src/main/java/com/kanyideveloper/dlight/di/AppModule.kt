@@ -22,12 +22,12 @@ object AppModule {
     @Singleton
     fun provideConverters(gson: Gson) = Converters(gson)
 
-    @Provides
+/*    @Provides
     @Singleton
     fun provideCoroutineDispatcher(
-        coroutineDispatcher: CoroutineDispatcher = Dispatchers.Main
+        coroutineDispatcher: CoroutineDispatcher
     ): CoroutineDispatcher {
         return coroutineDispatcher
-    }
+    }*/
 
 }
