@@ -3,7 +3,7 @@ package com.kanyideveloper.dlight.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class UserFollowersResponseDto(
+data class UserFollowResponseDto(
     @SerializedName("avatar_url")
     val avatarUrl: String,
     @SerializedName("events_url")

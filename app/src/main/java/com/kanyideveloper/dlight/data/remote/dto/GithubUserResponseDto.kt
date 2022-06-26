@@ -11,11 +11,11 @@ data class GithubUserResponseDto(
     @SerializedName("blog")
     val blog: String,
     @SerializedName("company")
-    val company: String,
+    val company: String?,
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("email")
-    val email: Any,
+    val email: String?,
     @SerializedName("events_url")
     val eventsUrl: String,
     @SerializedName("followers")

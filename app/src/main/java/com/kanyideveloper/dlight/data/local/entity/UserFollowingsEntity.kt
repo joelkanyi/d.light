@@ -3,12 +3,12 @@ package com.kanyideveloper.dlight.data.local.entity
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.kanyideveloper.dlight.domain.model.Repo
+import com.kanyideveloper.dlight.domain.model.Follow
 
-@Entity(tableName = "user_repos_table", indices = [Index(value = ["login"], unique = true)])
-data class UserReposEntity(
+@Entity(tableName = "user_followings_table", indices = [Index(value = ["login"], unique = true)])
+data class UserFollowingsEntity(
     val login: String,
-    val repos: List<Repo>,
+    val followings: List<Follow>,
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
 )
