@@ -75,7 +75,6 @@ class UserSearchViewModel @Inject constructor(
                         )
                         getUserFollowings(username)
                         getUserFollowers(username)
-                        getUserRepos(username)
                     }
                     is Resource.Error -> {
                         _userDataState.value = userDataState.value.copy(
@@ -141,39 +140,6 @@ class UserSearchViewModel @Inject constructor(
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
                             following = result.data ?: emptyList(),
-                        )
-                    }
-                    is Resource.Error -> {
-                        _userDataState.value = userDataState.value.copy(
-                            isLoading = false,
-                            user = null,
-                            followers = emptyList(),
-                            following = emptyList(),
-                            repos = emptyList(),
-                            error = result.message
-                        )
-                        UiEvents.SnackbarEvent(
-                            message = result.message ?: "Unknown error occurred"
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private fun getUserRepos(username: String) {
-        viewModelScope.launch(coroutineDispatcher) {
-            userUseCases.getUserRepos(username).collectLatest { result ->
-                when (result) {
-                    is Resource.Loading -> {
-                        _userDataState.value = userDataState.value.copy(
-                            isLoading = true,
-                        )
-                    }
-                    is Resource.Success -> {
-                        _userDataState.value = userDataState.value.copy(
-                            isLoading = false,
-                            repos = result.data ?: emptyList(),
                         )
                     }
                     is Resource.Error -> {

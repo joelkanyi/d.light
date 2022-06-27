@@ -5,11 +5,13 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.SpaceAround
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,21 +36,21 @@ import com.kanyideveloper.dlight.domain.model.Follow
 import com.kanyideveloper.dlight.domain.model.User
 import com.kanyideveloper.dlight.presentation.components.MainAppBar
 import com.kanyideveloper.dlight.presentation.components.SearchWidgetState
-import com.kanyideveloper.dlight.presentation.ui.theme.DlightTheme
+import com.kanyideveloper.dlight.presentation.screens.destinations.UserRepositoriesScreenDestination
 import com.kanyideveloper.dlight.presentation.ui.theme.MyDarkGrayColor
 import com.kanyideveloper.dlight.presentation.ui.theme.MyGrayColor
 import com.kanyideveloper.dlight.util.UiEvents
 import com.kanyideveloper.dlight.util.gifLoader
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
-
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Destination(start = true)
 @Composable
 fun UserSearchScreen(
-    viewModel: UserSearchViewModel = hiltViewModel()
+    viewModel: UserSearchViewModel = hiltViewModel(),
+    navigator: DestinationsNavigator
 ) {
 
     val state by viewModel.userDataState
@@ -96,28 +97,85 @@ fun UserSearchScreen(
     ) {
         Box(Modifier.fillMaxSize()) {
             if (state.user != null && !state.isLoading) {
-                Column() {
-                    if (state.user != null) {
-                        UserProfileHeader(
-                            user = state.user,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
+
+                LazyColumn {
+                    item {
+                        if (state.user != null) {
+                            UserProfileHeader(
+                                user = state.user,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            )
+                        }
+                    }
+
+                    item {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "${state.repos.size} Repositories",
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.Black
+                                )
+                            )
+                            IconButton(
+                                onClick = {
+                                    navigator.navigate(
+                                        UserRepositoriesScreenDestination(
+                                            viewModel.searchString.value
+                                        )
+                                    )
+                                },
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Icon(Icons.Default.ChevronRight, contentDescription = "To Repositories Screen")
+                            }
+                        }
+                    }
+
+                    item {
+                        Text(
+                            text = "Followers",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black
+                            )
                         )
                     }
 
-                    Timber.d("Followers ${state.followers.size}")
+                    item {
+                        LazyRow {
+                            items(state.followers){ follower ->
+                                FollowItem(follow = follower)
 
-                    CustomFollowsTabs(
-                        followers = state.followers,
-                        following = state.following,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    )
+                            }
+                        }
+                    }
 
-                    if (state.followers.isNotEmpty() || state.following.isNotEmpty()) {
+                    item {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "Following",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black
+                            )
+                        )
+                    }
 
+                    item {
+                        LazyRow {
+                            items(state.following) { following ->
+                                FollowItem(follow = following)
+                            }
+                        }
                     }
                 }
 
@@ -335,43 +393,6 @@ fun UserProfileHeader(
 }
 
 @Composable
-fun CustomFollowsTabs(
-    followers: List<Follow>,
-    following: List<Follow>,
-    modifier: Modifier = Modifier
-) {
-    var tabIndex by remember { mutableStateOf(0) }
-    val tabTiles = listOf(
-        "Followers",
-        "Following"
-    )
-    Column {
-        TabRow(
-            backgroundColor = Color.White,
-            selectedTabIndex = tabIndex,
-            modifier = modifier.fillMaxWidth()
-        ) {
-            tabTiles.forEachIndexed { index, title ->
-                Tab(
-                    text = {
-                        Text(text = title)
-                    },
-                    selected = tabIndex == index,
-                    onClick = {
-                        tabIndex = index
-                    }
-                )
-            }
-        }
-
-        when (tabIndex) {
-            0 -> FollowersList(followers)
-            1 -> FollowingList(following)
-        }
-    }
-}
-
-@Composable
 fun FollowersList(
     followers: List<Follow>,
 ) {
@@ -428,7 +449,10 @@ fun FollowItem(
                 contentDescription = null
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "${follow.login}", style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 16.sp))
+            Text(
+                text = "${follow.login}",
+                style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+            )
         }
     }
 }

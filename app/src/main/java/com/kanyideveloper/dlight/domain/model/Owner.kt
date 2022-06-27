@@ -1,5 +1,9 @@
 package com.kanyideveloper.dlight.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Owner(
     val avatarUrl: String?,
     val eventsUrl: String?,
@@ -19,4 +23,4 @@ data class Owner(
     val subscriptionsUrl: String?,
     val type: String?,
     val url: String?
-)
+): Parcelable

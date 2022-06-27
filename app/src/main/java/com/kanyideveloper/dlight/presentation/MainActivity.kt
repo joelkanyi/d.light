@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
-import com.kanyideveloper.dlight.presentation.screens.search.NavGraphs
+import com.kanyideveloper.dlight.presentation.screens.NavGraphs
 import com.kanyideveloper.dlight.presentation.ui.theme.DlightTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import dagger.hilt.android.AndroidEntryPoint

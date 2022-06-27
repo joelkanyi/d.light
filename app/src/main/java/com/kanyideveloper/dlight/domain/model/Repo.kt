@@ -1,5 +1,9 @@
 package com.kanyideveloper.dlight.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Repo(
     val allowForking: Boolean,
     val blobsUrl: String?,
@@ -28,4 +32,5 @@ data class Repo(
     val topics: List<String?>,
     val url: String?,
     val visibility: String?,
-)
+    val updatedAt: String?
+    ): Parcelable

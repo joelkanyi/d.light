@@ -40,6 +40,7 @@ internal fun UserRepositoriesResponseDto.toDomain(): Repo {
         url = url,
         visibility = visibility,
         owner = ownerDto.toDomain(),
+        updatedAt = updatedAt
     )
 }
 
