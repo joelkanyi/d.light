@@ -15,8 +15,10 @@ import com.kanyideveloper.dlight.domain.model.Repo
 import com.kanyideveloper.dlight.domain.model.User
 import com.kanyideveloper.dlight.domain.repository.UserRepository
 import com.kanyideveloper.dlight.util.Resource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -45,7 +47,11 @@ class UserRepositoryImpl(
 
                 userDao.insertUser(apiResponse.toEntity())
 
-                emit(Resource.Success(apiResponse.toDomain()))
+                val user = userDao.getUser(username)
+
+                if (user != null){
+                    emit(Resource.Success(user.toDomain()))
+                }
 
             } catch (e: HttpException) {
                 when (e.code()) {
@@ -92,7 +98,11 @@ class UserRepositoryImpl(
 
                     followersDao.insertUserFollowers(userFollowers)
 
-                    emit(Resource.Success(apiResponse.map { it.toDomain() }))
+                    val followers = followersDao.getUserFollowers(username)?.followers
+
+                    if (followers != null){
+                        emit(Resource.Success(followers))
+                    }
 
                 } catch (e: HttpException) {
                     when (e.code()) {
@@ -140,7 +150,11 @@ class UserRepositoryImpl(
 
                     followingDao.insertUserFollowings(userFollowings)
 
-                    emit(Resource.Success(apiResponse.map { it.toDomain() }))
+                    val following = followingDao.getUserFollowings(username)
+
+                    if (following?.followings != null){
+                        emit(Resource.Success(following.followings))
+                    }
 
                 } catch (e: HttpException) {
                     when (e.code()) {
@@ -175,6 +189,7 @@ class UserRepositoryImpl(
                 emit(Resource.Success(databaseReposData.repos))
             } else {
                 try {
+                    Timber.d("Trying to get data from api")
                     val apiResponse = githubRestAPI.getUserRepos(username)
 
                     Timber.d("repos apiResponse: $apiResponse")
@@ -188,7 +203,11 @@ class UserRepositoryImpl(
 
                     reposDao.insertUserRepos(userRepos)
 
-                    emit(Resource.Success(apiResponse.map { it.toDomain() }))
+                    val repos = reposDao.getUserRepos(username)
+
+                    if (repos?.repos != null){
+                        emit(Resource.Success(repos.repos))
+                    }
 
                 } catch (e: HttpException) {
                     when (e.code()) {
@@ -209,5 +228,5 @@ class UserRepositoryImpl(
                     emit(Resource.Error("Couldn't connect to the server. Please check your internet connection."))
                 }
             }
-        }
+        }.flowOn(Dispatchers.IO)
 }

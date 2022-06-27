@@ -1,9 +1,10 @@
 package com.kanyideveloper.dlight.presentation.screens.search
 
 import android.content.Context
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.SpaceAround
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -13,7 +14,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -98,47 +101,55 @@ fun UserSearchScreen(
         Box(Modifier.fillMaxSize()) {
             if (state.user != null && !state.isLoading) {
 
-                LazyColumn {
+                LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp)) {
                     item {
                         if (state.user != null) {
                             UserProfileHeader(
                                 user = state.user,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp)
                             )
-                        }
-                    }
 
-                    item {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "${state.repos.size} Repositories",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color.Black
-                                )
-                            )
-                            IconButton(
-                                onClick = {
-                                    navigator.navigate(
-                                        UserRepositoriesScreenDestination(
-                                            viewModel.searchString.value
-                                        )
-                                    )
-                                },
-                                modifier = Modifier.padding(16.dp)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Divider(thickness = 0.7.dp, color = MyGrayColor)
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.ChevronRight, contentDescription = "To Repositories Screen")
+                                Text(
+                                    text = "${state.user?.publicRepos} Repositories",
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.Black
+                                    )
+                                )
+                                IconButton(
+                                    onClick = {
+                                        navigator.navigate(
+                                            UserRepositoriesScreenDestination(
+                                                username = viewModel.searchString.value
+                                            )
+                                        )
+                                    },
+                                ) {
+                                    Icon(
+                                        Icons.Default.ChevronRight,
+                                        contentDescription = "To Repositories Screen"
+                                    )
+                                }
                             }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Divider(thickness = 0.7.dp, color = MyGrayColor)
+
                         }
                     }
 
                     item {
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             text = "Followers",
                             style = TextStyle(
@@ -151,7 +162,7 @@ fun UserSearchScreen(
 
                     item {
                         LazyRow {
-                            items(state.followers){ follower ->
+                            items(state.followers) { follower ->
                                 FollowItem(follow = follower)
 
                             }
@@ -274,28 +285,27 @@ fun UserProfileHeader(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row(horizontalArrangement = SpaceAround) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.PeopleOutline,
-                    contentDescription = "Followers Count",
-                    tint = MyDarkGrayColor,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "${user?.followers} followers")
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(
-                    modifier = Modifier
-                        .size(5.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "${user?.following} following")
-            }
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.PeopleOutline,
+                contentDescription = "Followers Count",
+                tint = MyDarkGrayColor,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "${user?.followers} followers")
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(5.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "${user?.following} following")
+
         }
 
         if (user?.company != null) {
@@ -393,37 +403,16 @@ fun UserProfileHeader(
 }
 
 @Composable
-fun FollowersList(
-    followers: List<Follow>,
-) {
-    LazyColumn {
-        items(followers) { follower ->
-            FollowItem(follow = follower)
-        }
-    }
-}
-
-@Composable
-fun FollowingList(
-    following: List<Follow>,
-) {
-    LazyColumn {
-        items(following) { follower ->
-            FollowItem(follow = follower)
-        }
-    }
-}
-
-@Composable
 fun FollowItem(
     follow: Follow,
     modifier: Modifier = Modifier
 ) {
     Card(
+        backgroundColor = Color(0XFFf2f2f2),
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        elevation = 0.dp,
+            .width(180.dp)
+            .padding(horizontal = 5.dp, vertical = 8.dp),
+        elevation = 2.dp,
         shape = RoundedCornerShape(
             8.dp
         ),
@@ -445,13 +434,13 @@ fun FollowItem(
                 ),
                 modifier = modifier
                     .clip(CircleShape)
-                    .size(50.dp),
+                    .size(60.dp),
                 contentDescription = null
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "${follow.login}",
-                style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp)
             )
         }
     }

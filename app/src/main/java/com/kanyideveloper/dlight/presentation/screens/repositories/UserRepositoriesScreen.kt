@@ -1,5 +1,6 @@
 package com.kanyideveloper.dlight.presentation.screens.repositories
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,7 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,12 +40,12 @@ fun UserRepositoriesScreen(
     navigator: DestinationsNavigator,
     viewModel: UserRepositoriesViewModel = hiltViewModel()
 ) {
+    viewModel.setUserName(username)
+    viewModel.getUserRepositories(viewModel.username.value)
 
     val state by viewModel.userReposState
     val scaffoldState = rememberScaffoldState()
     val context = LocalContext.current
-
-    viewModel.setUserName(username)
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -60,28 +61,33 @@ fun UserRepositoriesScreen(
     }
 
     Scaffold(
+        scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
+                backgroundColor = Color.White,
                 title = {
-                    Text(text = "Repositories")
+                    Text(text = "Repositories", color = Color.Black)
                 },
                 navigationIcon = {
                     IconButton(onClick = {
                         navigator.popBackStack()
                     }) {
                         Icon(
-                            imageVector = Icons.Default.ChevronLeft,
-                            contentDescription = "Back to Home"
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back to Home",
+                            tint = Color.Black
                         )
                     }
                 },
             )
         }
     ) {
-        Box {
+        Box(Modifier.fillMaxSize()) {
             LazyColumn {
-                items(state.repos) { repo ->
-                    RepoItem(repo = repo)
+                if (state.repos.isNotEmpty()) {
+                    items(state.repos) { repo ->
+                        RepoItem(repo = repo)
+                    }
                 }
             }
 
@@ -91,160 +97,171 @@ fun UserRepositoriesScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
+
+            if (state.error != null){
+                Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
 
 @Composable
 fun RepoItem(repo: Repo) {
-    Column {
-        repo.name?.let {
-            Text(
-                text = it,
-                style = TextStyle(
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 5.dp),
+        elevation = 0.dp
+    ) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            repo.name?.let {
+                Text(
+                    text = it,
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Black
+                    )
                 )
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        repo.description?.let {
-            Text(
-                text = it,
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Light,
-                    color = Color.Black
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            repo.description?.let {
+                Text(
+                    text = it,
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Light,
+                        color = Color.Black
+                    )
                 )
-            )
-        }
-        if (repo.language != null) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.height(8.dp))
+            }
 
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .clip(CircleShape)
-                        .background(
-                            when (repo.language) {
-                                "Kotlin" -> {
-                                    KotlinColor
-                                }
-                                "Java" -> {
-                                    JavaColor
-                                }
-                                "Python" -> {
-                                    PythonColor
-                                }
-                                "Javascript" -> {
-                                    JavaScriptColor
-                                }
-                                "Dart" -> {
-                                    DartColor
-                                }
-                                else -> {
-                                    OtherColor
-                                }
-                            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (repo.language != null) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    when (repo.language) {
+                                        "Kotlin" -> {
+                                            KotlinColor
+                                        }
+                                        "Java" -> {
+                                            JavaColor
+                                        }
+                                        "Python" -> {
+                                            PythonColor
+                                        }
+                                        "Javascript" -> {
+                                            JavaScriptColor
+                                        }
+                                        "Dart" -> {
+                                            DartColor
+                                        }
+                                        else -> {
+                                            OtherColor
+                                        }
+                                    }
+                                )
                         )
-                )
-                Spacer(modifier = Modifier.width(3.dp))
-                Text(
-                    text = repo.language,
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color.Black
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = repo.language,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Light,
+                                color = Color.Black
+                            )
+                        )
+                    }
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Icon(
+                        Icons.Outlined.Star,
+                        contentDescription = "Repo Stars",
+                        tint = MyDarkGrayColor,
+                        modifier = Modifier.size(14.dp),
                     )
-                )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(
+                        text = repo.stargazersCount.toString(),
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Light,
+                            color = Color.Black
+                        )
+                    )
+
+                }
+
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Icon(
+                        modifier = Modifier.size(14.dp),
+                        painter = painterResource(R.drawable.ic_issues),
+                        contentDescription = "Repo Issues",
+                        tint = MyDarkGrayColor
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(
+                        text = repo.openIssuesCount.toString(),
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Light,
+                            color = Color.Black
+                        )
+                    )
+
+                }
+
+                if (repo.forksCount != null) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(14.dp),
+                            painter = painterResource(R.drawable.ic_fork),
+                            contentDescription = "Repo Forks",
+                            tint = MyDarkGrayColor
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = repo.forksCount.toString(),
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Light,
+                                color = Color.Black
+                            )
+                        )
+                    }
+                }
             }
         }
-
-        if (repo.stargazersCount < 0) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.width(5.dp))
-
-                Icon(
-                    Icons.Outlined.Star,
-                    contentDescription = "Repo Stars",
-                    tint = MyDarkGrayColor
-                )
-                Spacer(modifier = Modifier.width(3.dp))
-                Text(
-                    text = repo.stargazersCount.toString(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color.Black
-                    )
-                )
-            }
-        }
-
-        if (repo.openIssuesCount < 0) {
-            Spacer(modifier = Modifier.width(5.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_issues),
-                    contentDescription = "Repo Issues",
-                    tint = MyDarkGrayColor
-                )
-                Spacer(modifier = Modifier.width(3.dp))
-                Text(
-                    text = repo.openIssuesCount.toString(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color.Black
-                    )
-                )
-            }
-        }
-
-        if (repo.forksCount != null) {
-            Spacer(modifier = Modifier.width(5.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_fork),
-                    contentDescription = "Repo Forks",
-                    tint = MyDarkGrayColor
-                )
-                Spacer(modifier = Modifier.width(3.dp))
-                Text(
-                    text = repo.forksCount.toString(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color.Black
-                    )
-                )
-            }
-        }
-
-        if (repo.updatedAt != null) {
-            Text(
-                text = repo.updatedAt,
-                style = TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Light,
-                    color = Color.Black
-                )
-            )
-        }
+        Divider(thickness = 0.8.dp, color = MyGrayColor)
     }
 }

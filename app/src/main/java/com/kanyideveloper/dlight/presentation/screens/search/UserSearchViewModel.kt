@@ -140,6 +140,7 @@ class UserSearchViewModel @Inject constructor(
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
                             following = result.data ?: emptyList(),
+                            isLoading = false
                         )
                     }
                     is Resource.Error -> {
