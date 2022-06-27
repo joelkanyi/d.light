@@ -1,26 +1,29 @@
 package com.kanyideveloper.dlight.presentation.screens.search
 
 import android.content.Context
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement.SpaceAround
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,10 +31,18 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.kanyideveloper.dlight.R
+import com.kanyideveloper.dlight.domain.model.Follow
+import com.kanyideveloper.dlight.domain.model.User
+import com.kanyideveloper.dlight.presentation.components.MainAppBar
+import com.kanyideveloper.dlight.presentation.components.SearchWidgetState
+import com.kanyideveloper.dlight.presentation.ui.theme.DlightTheme
+import com.kanyideveloper.dlight.presentation.ui.theme.MyDarkGrayColor
+import com.kanyideveloper.dlight.presentation.ui.theme.MyGrayColor
 import com.kanyideveloper.dlight.util.UiEvents
 import com.kanyideveloper.dlight.util.gifLoader
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -74,7 +85,7 @@ fun UserSearchScreen(
                     viewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
                 },
                 onSearchClicked = {
-                    viewModel.getUserProfile(it)
+                    viewModel.getUserProfile(it.trim())
                     keyboardController?.hide()
                 },
                 onSearchTriggered = {
@@ -85,67 +96,31 @@ fun UserSearchScreen(
     ) {
         Box(Modifier.fillMaxSize()) {
             if (state.user != null && !state.isLoading) {
-                LazyColumn {
-                    item {
-                        if (state.user != null) {
-                            Text(text = state.user?.name ?: "Null")
-                        }
+                Column() {
+                    if (state.user != null) {
+                        UserProfileHeader(
+                            user = state.user,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        )
                     }
-                    item {
-                        Text(text = "Followers")
-                    }
-                    item {
-                        LazyRow {
-                            items(state.followers) { follower ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(70.dp)
-                                        .padding(10.dp),
-                                    elevation = 5.dp
-                                ) {
-                                    Text(text = follower.login ?: "")
-                                }
-                            }
-                        }
-                    }
-                    item {
-                        Text(text = "Following")
-                    }
-                    item {
-                        LazyRow {
-                            items(state.following) { follower ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(70.dp)
-                                        .padding(10.dp),
-                                    elevation = 5.dp
-                                ) {
-                                    Text(text = follower.login ?: "")
-                                }
-                            }
-                        }
-                    }
-                    item {
-                        Text(text = "Repos")
-                    }
-                    item {
-                        LazyRow {
-                            items(state.repos) { follower ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(70.dp)
-                                        .padding(10.dp),
-                                    elevation = 5.dp
-                                ) {
-                                    Text(text = follower.name ?: "")
-                                }
-                            }
-                        }
+
+                    Timber.d("Followers ${state.followers.size}")
+
+                    CustomFollowsTabs(
+                        followers = state.followers,
+                        following = state.following,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+
+                    if (state.followers.isNotEmpty() || state.following.isNotEmpty()) {
+
                     }
                 }
+
             } else if (state.user == null && !state.isLoading) {
                 EmptyStateGifImage(
                     modifier = Modifier
@@ -161,6 +136,299 @@ fun UserSearchScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun UserProfileHeader(
+    user: User?,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(
+                            data = user?.avatarUrl
+                                ?: "https://avatars.githubusercontent.com/u/5934628?v=4"
+                        )
+                        .apply(block = fun ImageRequest.Builder.() {
+                            crossfade(true)
+                        }).build()
+                ),
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(100.dp),
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(verticalArrangement = Arrangement.Center) {
+                Text(
+                    text = user?.name ?: user?.login ?: "Null",
+                    style = TextStyle(
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Text(
+                    text = user?.login ?: "Null",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                )
+            }
+        }
+
+        if (user?.bio != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = 1.dp,
+                shape = RoundedCornerShape(
+                    8.dp
+                ),
+                backgroundColor = MyGrayColor,
+                border = BorderStroke(
+                    0.3.dp,
+                    Color.Black
+                ),
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    text = user.bio,
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(horizontalArrangement = SpaceAround) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.PeopleOutline,
+                    contentDescription = "Followers Count",
+                    tint = MyDarkGrayColor,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "${user?.followers} followers")
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
+                    modifier = Modifier
+                        .size(5.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "${user?.following} following")
+            }
+        }
+
+        if (user?.company != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Icon(
+                    imageVector = Icons.Outlined.BusinessCenter, contentDescription = "Company",
+                    tint = MyDarkGrayColor,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${user.company}",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                )
+            }
+        }
+
+        if (user?.location != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Icon(
+                    imageVector = Icons.Outlined.LocationOn, contentDescription = "Location",
+                    tint = MyDarkGrayColor,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${user.location}",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                )
+            }
+        }
+
+        if (user?.email != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Icon(
+                    imageVector = Icons.Outlined.Email, contentDescription = "Email",
+                    tint = MyDarkGrayColor,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${user.email}",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                )
+            }
+        }
+
+        if (user?.blog != null && user.blog != "") {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Icon(
+                    imageVector = Icons.Outlined.Link, contentDescription = "Blog",
+                    tint = MyDarkGrayColor,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${user.blog}",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                )
+            }
+        }
+
+        if (user?.twitterUsername != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_twitter),
+                    contentDescription = "Twitter",
+                    tint = MyDarkGrayColor,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "@${user.twitterUsername}",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CustomFollowsTabs(
+    followers: List<Follow>,
+    following: List<Follow>,
+    modifier: Modifier = Modifier
+) {
+    var tabIndex by remember { mutableStateOf(0) }
+    val tabTiles = listOf(
+        "Followers",
+        "Following"
+    )
+    Column {
+        TabRow(
+            backgroundColor = Color.White,
+            selectedTabIndex = tabIndex,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            tabTiles.forEachIndexed { index, title ->
+                Tab(
+                    text = {
+                        Text(text = title)
+                    },
+                    selected = tabIndex == index,
+                    onClick = {
+                        tabIndex = index
+                    }
+                )
+            }
+        }
+
+        when (tabIndex) {
+            0 -> FollowersList(followers)
+            1 -> FollowingList(following)
+        }
+    }
+}
+
+@Composable
+fun FollowersList(
+    followers: List<Follow>,
+) {
+    LazyColumn {
+        items(followers) { follower ->
+            FollowItem(follow = follower)
+        }
+    }
+}
+
+@Composable
+fun FollowingList(
+    following: List<Follow>,
+) {
+    LazyColumn {
+        items(following) { follower ->
+            FollowItem(follow = follower)
+        }
+    }
+}
+
+@Composable
+fun FollowItem(
+    follow: Follow,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        elevation = 0.dp,
+        shape = RoundedCornerShape(
+            8.dp
+        ),
+    ) {
+        Row(
+            Modifier.padding(5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(
+                            data = follow.avatarUrl
+                                ?: "https://avatars.githubusercontent.com/u/5934628?v=4"
+                        )
+                        .apply(block = fun ImageRequest.Builder.() {
+                            crossfade(true)
+                        }).build()
+                ),
+                modifier = modifier
+                    .clip(CircleShape)
+                    .size(50.dp),
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "${follow.login}", style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 16.sp))
         }
     }
 }

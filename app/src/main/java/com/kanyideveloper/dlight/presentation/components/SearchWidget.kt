@@ -1,4 +1,4 @@
-package com.kanyideveloper.dlight.presentation.screens.search
+package com.kanyideveloper.dlight.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kanyideveloper.dlight.domain.use_case.UserUseCases
+import com.kanyideveloper.dlight.presentation.components.SearchWidgetState
 import com.kanyideveloper.dlight.util.Resource
 import com.kanyideveloper.dlight.util.UiEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
