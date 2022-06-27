@@ -40,6 +40,7 @@ internal fun UserRepositoriesResponseDto.toDomain(): Repo {
         url = url,
         visibility = visibility,
         owner = ownerDto.toDomain(),
+        updatedAt = updatedAt
     )
 }
 
@@ -71,20 +72,9 @@ internal fun UserFollowResponseDto.toDomain(): Follow {
     return Follow(
         avatarUrl = avatarUrl,
         eventsUrl = eventsUrl,
-        followersUrl = followersUrl,
-        followingUrl = followingUrl,
-        gistsUrl = gistsUrl,
-        gravatarId = gravatarId,
-        htmlUrl = htmlUrl,
         id = id,
         login = login,
         nodeId = nodeId,
-        organizationsUrl = organizationsUrl,
-        receivedEventsUrl = receivedEventsUrl,
-        reposUrl = reposUrl,
-        siteAdmin = siteAdmin,
-        starredUrl = starredUrl,
-        subscriptionsUrl = subscriptionsUrl,
         type = type,
         url = url
     )
@@ -129,43 +119,6 @@ internal fun UserEntity.toDomain(): User {
 
 internal fun GithubUserResponseDto.toEntity(): UserEntity {
     return UserEntity(
-        avatarUrl = avatarUrl,
-        bio = bio,
-        blog = blog,
-        company = company,
-        createdAt = createdAt,
-        email = email,
-        eventsUrl = eventsUrl,
-        followers = followers,
-        followersUrl = followersUrl,
-        following = following,
-        followingUrl = followingUrl,
-        gistsUrl = gistsUrl,
-        gravatarId = gravatarId,
-        hireable = hireable,
-        htmlUrl = htmlUrl,
-        id = id,
-        location = location,
-        login = login,
-        name = name,
-        nodeId = nodeId,
-        organizationsUrl = organizationsUrl,
-        publicGists = publicGists,
-        publicRepos = publicRepos,
-        receivedEventsUrl = receivedEventsUrl,
-        reposUrl = reposUrl,
-        siteAdmin = siteAdmin,
-        starredUrl = starredUrl,
-        subscriptionsUrl = subscriptionsUrl,
-        twitterUsername = twitterUsername,
-        type = type,
-        updatedAt = updatedAt,
-        url = url,
-    )
-}
-
-internal fun GithubUserResponseDto.toDomain(): User {
-    return User(
         avatarUrl = avatarUrl,
         bio = bio,
         blog = blog,

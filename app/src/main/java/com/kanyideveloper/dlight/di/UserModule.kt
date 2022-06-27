@@ -34,6 +34,7 @@ object UserModule {
             "github_user_database"
         )
             .addTypeConverter(converters)
+            .fallbackToDestructiveMigration()
             .build()
     }
 
@@ -67,10 +68,10 @@ object UserModule {
     @Singleton
     fun provideUseCases(userRepository: UserRepository): UserUseCases {
         return UserUseCases(
-            getUserDataUseCase = GetUserData(userRepository),
-            getUserReposUseCase = GetUserRepos(userRepository),
-            getUserFollowersUseCase = GetUserFollowers(userRepository),
-            getUserFollowingUseCase = GetUserFollowings(userRepository),
+            getUserData = GetUserData(userRepository),
+            getUserRepos = GetUserRepos(userRepository),
+            getUserFollowers = GetUserFollowers(userRepository),
+            getUserFollowings = GetUserFollowings(userRepository),
         )
     }
 }

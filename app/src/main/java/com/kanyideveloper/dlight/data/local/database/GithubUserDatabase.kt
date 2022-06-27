@@ -16,7 +16,7 @@ import com.kanyideveloper.dlight.data.local.entity.UserReposEntity
 @TypeConverters(Converters::class)
 @Database(
     entities = [UserEntity::class, UserFollowingsEntity::class, UserFollowersEntity::class, UserReposEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class GithubUserDatabase : RoomDatabase() {
