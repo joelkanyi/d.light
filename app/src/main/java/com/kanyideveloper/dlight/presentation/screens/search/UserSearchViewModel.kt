@@ -22,8 +22,7 @@ class UserSearchViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
 ) : ViewModel() {
 
-    private val _searchWidgetState: MutableState<SearchWidgetState> =
-        mutableStateOf(value = SearchWidgetState.CLOSED)
+    private val _searchWidgetState: MutableState<SearchWidgetState> = mutableStateOf(value = SearchWidgetState.CLOSED)
     val searchWidgetState: State<SearchWidgetState> = _searchWidgetState
 
     fun updateSearchWidgetState(newValue: SearchWidgetState) {
@@ -37,19 +36,25 @@ class UserSearchViewModel @Inject constructor(
         _searchString.value = value
     }
 
-    private val _userDataState = mutableStateOf(UserDataState())
-    val userDataState: State<UserDataState> = _userDataState
-
     private val _eventFlow = MutableSharedFlow<UiEvents>()
     val eventFlow: SharedFlow<UiEvents> = _eventFlow.asSharedFlow()
 
     private val coroutineDispatcher = Dispatchers.IO
 
+    private val _userDataState = mutableStateOf(UserDataState())
+    val userDataState: State<UserDataState> = _userDataState
+
     fun getUserProfile(username: String) {
         viewModelScope.launch(coroutineDispatcher) {
+            if (username.isEmpty()) {
+                _eventFlow.emit(UiEvents.SnackbarEvent("Search field is empty, type something"))
+                return@launch
+            }
+
             _userDataState.value = userDataState.value.copy(
                 isLoading = true
             )
+
             userUseCases.getUserData(username).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
@@ -64,7 +69,7 @@ class UserSearchViewModel @Inject constructor(
                     }
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
-                            isLoading = false,
+                            isLoading = true,
                             user = result.data
                         )
                         getUserFollowings(username)
@@ -96,7 +101,9 @@ class UserSearchViewModel @Inject constructor(
             userUseCases.getUserFollowers(username).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
-
+                        _userDataState.value = userDataState.value.copy(
+                            isLoading = true,
+                        )
                     }
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
@@ -104,6 +111,14 @@ class UserSearchViewModel @Inject constructor(
                         )
                     }
                     is Resource.Error -> {
+                        _userDataState.value = userDataState.value.copy(
+                            isLoading = false,
+                            user = null,
+                            followers = emptyList(),
+                            following = emptyList(),
+                            repos = emptyList(),
+                            error = result.message
+                        )
                         UiEvents.SnackbarEvent(
                             message = result.message ?: "Unknown error occurred"
                         )
@@ -118,7 +133,9 @@ class UserSearchViewModel @Inject constructor(
             userUseCases.getUserFollowings(username).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
-
+                        _userDataState.value = userDataState.value.copy(
+                            isLoading = true,
+                        )
                     }
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
@@ -126,6 +143,14 @@ class UserSearchViewModel @Inject constructor(
                         )
                     }
                     is Resource.Error -> {
+                        _userDataState.value = userDataState.value.copy(
+                            isLoading = false,
+                            user = null,
+                            followers = emptyList(),
+                            following = emptyList(),
+                            repos = emptyList(),
+                            error = result.message
+                        )
                         UiEvents.SnackbarEvent(
                             message = result.message ?: "Unknown error occurred"
                         )
@@ -140,14 +165,25 @@ class UserSearchViewModel @Inject constructor(
             userUseCases.getUserRepos(username).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
-
+                        _userDataState.value = userDataState.value.copy(
+                            isLoading = true,
+                        )
                     }
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
+                            isLoading = false,
                             repos = result.data ?: emptyList(),
                         )
                     }
                     is Resource.Error -> {
+                        _userDataState.value = userDataState.value.copy(
+                            isLoading = false,
+                            user = null,
+                            followers = emptyList(),
+                            following = emptyList(),
+                            repos = emptyList(),
+                            error = result.message
+                        )
                         UiEvents.SnackbarEvent(
                             message = result.message ?: "Unknown error occurred"
                         )

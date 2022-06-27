@@ -9,9 +9,6 @@ import timber.log.Timber
 class GetUserData(private val userRepository: UserRepository) {
     suspend operator fun invoke(username: String): Flow<Resource<User>> {
 
-        // TODO: Do validation to check if username is empty or not
-        val user = userRepository.getUser(username)
-        //Timber.d("User: $user")
-        return user
+        return userRepository.getUser(username)
     }
 }
