@@ -23,7 +23,8 @@ class UserSearchViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
 ) : ViewModel() {
 
-    private val _searchWidgetState: MutableState<SearchWidgetState> = mutableStateOf(value = SearchWidgetState.CLOSED)
+    private val _searchWidgetState: MutableState<SearchWidgetState> =
+        mutableStateOf(value = SearchWidgetState.CLOSED)
     val searchWidgetState: State<SearchWidgetState> = _searchWidgetState
 
     fun updateSearchWidgetState(newValue: SearchWidgetState) {
@@ -59,18 +60,10 @@ class UserSearchViewModel @Inject constructor(
             userUseCases.getUserData(username).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
-                        _userDataState.value = userDataState.value.copy(
-                            isLoading = true,
-                            user = null,
-                            followers = emptyList(),
-                            following = emptyList(),
-                            repos = emptyList(),
-                            error = null
-                        )
                     }
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
-                            isLoading = true,
+                            isLoading = false,
                             user = result.data
                         )
                         getUserFollowings(username)
@@ -79,10 +72,6 @@ class UserSearchViewModel @Inject constructor(
                     is Resource.Error -> {
                         _userDataState.value = userDataState.value.copy(
                             isLoading = false,
-                            user = null,
-                            followers = emptyList(),
-                            following = emptyList(),
-                            repos = emptyList(),
                             error = result.message
                         )
                         _eventFlow.emit(
@@ -101,9 +90,7 @@ class UserSearchViewModel @Inject constructor(
             userUseCases.getUserFollowers(username).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
-                        _userDataState.value = userDataState.value.copy(
-                            isLoading = true,
-                        )
+
                     }
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
@@ -113,10 +100,6 @@ class UserSearchViewModel @Inject constructor(
                     is Resource.Error -> {
                         _userDataState.value = userDataState.value.copy(
                             isLoading = false,
-                            user = null,
-                            followers = emptyList(),
-                            following = emptyList(),
-                            repos = emptyList(),
                             error = result.message
                         )
                         UiEvents.SnackbarEvent(
@@ -133,23 +116,15 @@ class UserSearchViewModel @Inject constructor(
             userUseCases.getUserFollowings(username).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
-                        _userDataState.value = userDataState.value.copy(
-                            isLoading = true,
-                        )
                     }
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
                             following = result.data ?: emptyList(),
-                            isLoading = false
                         )
                     }
                     is Resource.Error -> {
                         _userDataState.value = userDataState.value.copy(
                             isLoading = false,
-                            user = null,
-                            followers = emptyList(),
-                            following = emptyList(),
-                            repos = emptyList(),
                             error = result.message
                         )
                         UiEvents.SnackbarEvent(

@@ -7,8 +7,8 @@ import com.kanyideveloper.dlight.data.local.dao.UserDao
 import com.kanyideveloper.dlight.data.local.entity.UserFollowersEntity
 import com.kanyideveloper.dlight.data.local.entity.UserFollowingsEntity
 import com.kanyideveloper.dlight.data.local.entity.UserReposEntity
-import com.kanyideveloper.dlight.data.local.mapper.toDomain
-import com.kanyideveloper.dlight.data.local.mapper.toEntity
+import com.kanyideveloper.dlight.data.mapper.toDomain
+import com.kanyideveloper.dlight.data.mapper.toEntity
 import com.kanyideveloper.dlight.data.remote.GithubRestAPI
 import com.kanyideveloper.dlight.domain.model.Follow
 import com.kanyideveloper.dlight.domain.model.Repo
@@ -49,7 +49,7 @@ class UserRepositoryImpl(
 
                 val user = userDao.getUser(username)
 
-                if (user != null){
+                if (user != null) {
                     emit(Resource.Success(user.toDomain()))
                 }
 
@@ -100,7 +100,7 @@ class UserRepositoryImpl(
 
                     val followers = followersDao.getUserFollowers(username)?.followers
 
-                    if (followers != null){
+                    if (followers != null) {
                         emit(Resource.Success(followers))
                     }
 
@@ -152,7 +152,7 @@ class UserRepositoryImpl(
 
                     val following = followingDao.getUserFollowings(username)
 
-                    if (following?.followings != null){
+                    if (following?.followings != null) {
                         emit(Resource.Success(following.followings))
                     }
 
@@ -205,7 +205,7 @@ class UserRepositoryImpl(
 
                     val repos = reposDao.getUserRepos(username)
 
-                    if (repos?.repos != null){
+                    if (repos?.repos != null) {
                         emit(Resource.Success(repos.repos))
                     }
 

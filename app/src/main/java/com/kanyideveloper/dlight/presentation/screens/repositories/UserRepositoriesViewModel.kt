@@ -64,7 +64,6 @@ class UserRepositoriesViewModel @Inject constructor(
                             error = result.message
                         )
                         Timber.d("Error")
-
                     }
                 }
             }

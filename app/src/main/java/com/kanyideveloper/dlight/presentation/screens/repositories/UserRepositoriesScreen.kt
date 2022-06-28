@@ -98,7 +98,7 @@ fun UserRepositoriesScreen(
                 )
             }
 
-            if (state.error != null){
+            if (state.error != null) {
                 Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
             }
         }
