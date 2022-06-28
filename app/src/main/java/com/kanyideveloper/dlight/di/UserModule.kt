@@ -14,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -38,13 +39,13 @@ object UserModule {
             .build()
     }
 
-
     @Provides
     @Singleton
-    fun provideGithubRestApi(): GithubRestAPI {
+    fun provideGithubRestApi(okHttpClient: OkHttpClient): GithubRestAPI {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
             .create(GithubRestAPI::class.java)
     }

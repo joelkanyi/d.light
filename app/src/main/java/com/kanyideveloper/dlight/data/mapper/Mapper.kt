@@ -1,4 +1,4 @@
-package com.kanyideveloper.dlight.data.local.mapper
+package com.kanyideveloper.dlight.data.mapper
 
 import com.kanyideveloper.dlight.data.local.entity.UserEntity
 import com.kanyideveloper.dlight.data.remote.dto.GithubUserResponseDto

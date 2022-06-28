@@ -477,7 +477,7 @@ fun EmptyStateGifImage(
                     size(Size.ORIGINAL)
                 }).build(), imageLoader = context.gifLoader()
             ),
-            contentDescription = null,
+            contentDescription = "Empty State Gif",
             modifier = Modifier
                 .fillMaxWidth()
                 .height(350.dp)
