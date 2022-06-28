@@ -18,7 +18,7 @@ I added some screenshots in the screenshots folder, in the root directory of the
 <img src="screenshorts/demo.gif" width="250"/> <img src="screenshorts/user.png" width="250"/> <img src="screenshorts/repos.png" width="250"/>
 
 ## Prerequisites
-Before running the application, you need to add your Github Personal Access Token in your `local.properties` file.
+Before running the application, you need to add your Github Personal Access Token in your `gradle.properties` file.
 
 `ACCESS_TOKEN = "***"`
 
