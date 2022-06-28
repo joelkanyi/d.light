@@ -7,10 +7,6 @@ plugins {
     id 'kotlin-parcelize'
 }
 
-def localPropertiesFile = rootProject.file("local.properties")
-def localProperties = new Properties()
-localProperties.load(new FileInputStream(localPropertiesFile))
-
 android {
     compileSdkVersion 32
 
@@ -26,7 +22,7 @@ android {
             useSupportLibrary true
         }
 
-        buildConfigField "String", "ACCESS_TOKEN", localProperties['ACCESS_TOKEN']
+        buildConfigField ("String", "ACCESS_TOKEN", ACCESS_TOKEN)
     }
 
     buildTypes {
