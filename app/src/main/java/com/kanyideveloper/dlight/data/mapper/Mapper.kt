@@ -13,32 +13,14 @@ import com.kanyideveloper.dlight.domain.model.User
 
 internal fun UserRepositoriesResponseDto.toDomain(): Repo {
     return Repo(
-        allowForking = allowForking,
-        blobsUrl = blobsUrl,
-        branchesUrl = branchesUrl,
-        cloneUrl = cloneUrl,
-        collaboratorsUrl = collaboratorsUrl,
-        commitsUrl = commitsUrl,
-        contentsUrl = contentsUrl,
-        contributorsUrl = contributorsUrl,
         description = description,
         forksCount = forksCount,
-        forksUrl = forksUrl,
         fullName = fullName,
-        gitCommitsUrl = gitCommitsUrl,
-        gitUrl = gitUrl,
         id = id,
         language = language,
         name = name,
         openIssuesCount = openIssuesCount,
-        `private` = `private`,
-        pullsUrl = pullsUrl,
-        size = size,
         stargazersCount = stargazersCount,
-        svnUrl = svnUrl,
-        topics = topics,
-        url = url,
-        visibility = visibility,
         owner = ownerDto.toDomain(),
         updatedAt = updatedAt
     )
@@ -48,23 +30,9 @@ internal fun UserRepositoriesResponseDto.toDomain(): Repo {
 internal fun OwnerDto.toDomain(): Owner {
     return Owner(
         avatarUrl = avatarUrl,
-        eventsUrl = eventsUrl,
-        followersUrl = followersUrl,
-        followingUrl = followingUrl,
-        gistsUrl = gistsUrl,
-        gravatarId = gravatarId,
-        htmlUrl = htmlUrl,
         id = id,
         login = login,
-        nodeId = nodeId,
-        organizationsUrl = organizationsUrl,
-        receivedEventsUrl = receivedEventsUrl,
-        reposUrl = reposUrl,
-        siteAdmin = siteAdmin,
-        starredUrl = starredUrl,
-        subscriptionsUrl = subscriptionsUrl,
         type = type,
-        url = url
     )
 }
 

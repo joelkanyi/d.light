@@ -1,9 +1,8 @@
-package com.kanyideveloper.dlight
+package com.kanyideveloper.dlight.data.remote
 
 import android.content.Context
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
-import com.kanyideveloper.dlight.data.remote.GithubRestAPI
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -21,8 +20,11 @@ import java.util.concurrent.TimeUnit
 
 class GithubApiTest {
     private var context: Context? = null
-    private var mockWebServer = MockWebServer()
     private lateinit var githubRestApi: GithubRestAPI
+
+    companion object {
+        val mockWebServer = MockWebServer()
+    }
 
     @Before
     fun setup() {

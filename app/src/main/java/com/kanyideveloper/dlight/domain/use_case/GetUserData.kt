@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 class GetUserData(private val userRepository: UserRepository) {
     suspend operator fun invoke(username: String): Flow<Resource<User>> {
-
         return userRepository.getUser(username)
     }
 }

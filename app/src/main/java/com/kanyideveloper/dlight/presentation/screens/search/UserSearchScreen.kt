@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -103,7 +104,6 @@ fun UserSearchScreen(
 
                 LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp)) {
                     item {
-                        if (state.user != null) {
                             UserProfileHeader(
                                 user = state.user,
                                 modifier = Modifier
@@ -145,7 +145,7 @@ fun UserSearchScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Divider(thickness = 0.7.dp, color = MyGrayColor)
 
-                        }
+
                     }
 
                     item {
@@ -240,6 +240,7 @@ fun UserProfileHeader(
             Spacer(modifier = Modifier.width(8.dp))
             Column(verticalArrangement = Arrangement.Center) {
                 Text(
+                    modifier = Modifier.testTag("Name"),
                     text = user?.name ?: user?.login ?: "Null",
                     style = TextStyle(
                         fontSize = 22.sp,
@@ -247,6 +248,7 @@ fun UserProfileHeader(
                     )
                 )
                 Text(
+                    modifier = Modifier.testTag("Login"),
                     text = user?.login ?: "Null",
                     style = TextStyle(
                         fontSize = 16.sp,
@@ -439,6 +441,7 @@ fun FollowItem(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
+                modifier = Modifier.testTag("Follow Name"),
                 text = "${follow.login}",
                 style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp)
             )

@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -63,14 +64,16 @@ fun SearchAppBar(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(56.dp)
+            .testTag("SearchAppBar"),
         elevation = AppBarDefaults.TopAppBarElevation,
         color = Color.White
     ) {
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .testTag("SearchAppBar_TextField"),
             value = text,
             onValueChange = {
                 onTextChange(it)
@@ -94,7 +97,7 @@ fun SearchAppBar(
                     }) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Search Icon",
+                        contentDescription = "SearchAppBar Search Icon",
                         tint = Color.Black
                     )
                 }
@@ -117,7 +120,7 @@ fun SearchAppBar(
                 }
             },
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
+                imeAction = ImeAction.Search,
             ),
             keyboardActions = KeyboardActions(
                 onSearch = {
@@ -140,6 +143,7 @@ fun DefaultAppBar(
     onSearchClicked: () -> Unit
 ) {
     TopAppBar(
+        modifier = Modifier.testTag("DefaultAppBar"),
         backgroundColor = Color.White,
         title = {
             Text(
@@ -151,7 +155,7 @@ fun DefaultAppBar(
             IconButton(onClick = { onSearchClicked() }) {
                 Icon(
                     imageVector = Icons.Filled.Search,
-                    contentDescription = "Search Icon",
+                    contentDescription = "Default Search Icon",
                     tint = Color.Black
                 )
             }

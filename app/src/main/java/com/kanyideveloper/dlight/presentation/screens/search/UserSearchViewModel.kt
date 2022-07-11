@@ -48,18 +48,12 @@ class UserSearchViewModel @Inject constructor(
 
     fun getUserProfile(username: String) {
         viewModelScope.launch(coroutineDispatcher) {
-            if (username.isEmpty()) {
-                _eventFlow.emit(UiEvents.SnackbarEvent("Search field is empty, type something"))
-                return@launch
-            }
-
-            _userDataState.value = userDataState.value.copy(
-                isLoading = true
-            )
-
             userUseCases.getUserData(username).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
+                        _userDataState.value = userDataState.value.copy(
+                            isLoading = true
+                        )
                     }
                     is Resource.Success -> {
                         _userDataState.value = userDataState.value.copy(
